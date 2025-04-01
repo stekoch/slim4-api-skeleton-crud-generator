@@ -5,13 +5,14 @@ namespace App\Command;
 class CrudGeneratorService
 {
     private $entity;
-
     private $entityUpper;
+    private $tablename;
 
-    public function generateCrud($db, $entity)
+    public function generateCrud($db, $entity, $tablename = null)
     {
         $this->entity = $entity;
         $this->entityUpper = ucfirst($this->entity);
+        $this->tablename = $tablename ?: $entity;
         $entity = new CrudGeneratorEntity();
         $entity->getParamsAndFields($db, $this->entity);
         $this->updateRoutes();
@@ -27,7 +28,7 @@ class CrudGeneratorService
     private function getBaseInsertQueryFunction($entity)
     {
         // Get Base Query For Insert Function and return this Mock Code...
-        return '$query = \'INSERT INTO `'.$this->entity.'` ('.$entity->list1.') VALUES ('.$entity->list2.')\';
+        return '$query = \'INSERT INTO `'.$this->tablename.'` ('.$entity->list1.') VALUES ('.$entity->list2.')\';
         $statement = $this->getDb()->prepare($query);
         '.$entity->list3.'
         $statement->execute();
@@ -40,7 +41,7 @@ class CrudGeneratorService
         // Get Base Query For Update Function and return this Mock Code...
         return $entity->list5.'
 
-        $query = \'UPDATE `'.$this->entity.'` SET '.$entity->list4.' WHERE `id` = :id\';
+        $query = \'UPDATE `'.$this->tablename.'` SET '.$entity->list4.' WHERE `id` = :id\';
         $statement = $this->getDb()->prepare($query);
         '.$entity->list3.'
         $statement->execute();

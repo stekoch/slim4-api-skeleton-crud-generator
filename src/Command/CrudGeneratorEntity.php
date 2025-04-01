@@ -20,8 +20,11 @@ class CrudGeneratorEntity
 
     public function getEntityFields($db, $entity)
     {
-        $query = "DESC `$entity`";
+        $query = "SELECT COLUMN_NAME AS Field, DATA_TYPE AS Type, IS_NULLABLE AS [Null]
+                  FROM INFORMATION_SCHEMA.COLUMNS
+                  WHERE TABLE_NAME = :entity";
         $statement = $db->prepare($query);
+        $statement->bindParam(':entity', $entity);
         $statement->execute();
 
         return $statement->fetchAll();
@@ -29,23 +32,24 @@ class CrudGeneratorEntity
 
     public function getFieldsList($field, $entity)
     {
-        $this->list1.= sprintf("`%s`, ", $field['Field']);
-        $this->list2.= sprintf(":%s, ", $field['Field']);
-        $this->list3.= sprintf('$statement->bindParam(\'%s\', $%s->%s);%s', $field['Field'], $entity, $field['Field'], PHP_EOL);
-        $this->list3.= sprintf("        %s", '');
+        $this->list1 .= sprintf("[%s], ", $field['Field']);
+        $this->list2 .= sprintf(":%s, ", $field['Field']);
+        $this->list3 .= sprintf('$statement->bindParam(\'%s\', $%s->%s);%s', $field['Field'], $entity, $field['Field'], PHP_EOL);
+        $this->list3 .= sprintf("        %s", '');
         if ($field['Field'] != 'id') {
-            $this->list4.= sprintf("`%s` = :%s, ", $field['Field'], $field['Field']);
-            $this->list5.= sprintf("if (isset(\$data->%s)) {%s", $field['Field'], PHP_EOL);
-            $this->list5.= sprintf("            $%s->%s = \$data->%s;%s", $entity, $field['Field'], $field['Field'], PHP_EOL);
-            $this->list5.= sprintf("        }%s", PHP_EOL);
-            $this->list5.= sprintf("        %s", '');
-            if ($field['Null'] == "NO" && strpos($field['Type'], 'varchar') !== false) {
-                $this->list6.= sprintf("'%s' => '%s',%s", $field['Field'], 'aaa', PHP_EOL);
-                $this->list6.= sprintf("            %s", '');
+            $this->list4 .= sprintf("[%s] = :%s, ", $field['Field'], $field['Field']);
+            $this->list5 .= sprintf("if (isset(\$data->%s)) {%s", $field['Field'], PHP_EOL);
+            $this->list5 .= sprintf("            $%s->%s = \$data->%s;%s", $entity, $field['Field'], $field['Field'], PHP_EOL);
+            $this->list5 .= sprintf("        }%s", PHP_EOL);
+            $this->list5 .= sprintf("        %s", '');
+            $type = strtolower($field['Type']);
+            if ($field['Null'] == "NO" && $type === 'varchar') {
+                $this->list6 .= sprintf("'%s' => '%s',%s", $field['Field'], 'aaa', PHP_EOL);
+                $this->list6 .= sprintf("            %s", '');
             }
-            if ($field['Null'] == "NO" && strpos($field['Type'], 'int') !== false) {
-                $this->list6.= sprintf("'%s' => %s,%s", $field['Field'], 1, PHP_EOL);
-                $this->list6.= sprintf("            %s", '');
+            if ($field['Null'] == "NO" && in_array($type, ['int', 'bigint', 'smallint'])) {
+                $this->list6 .= sprintf("'%s' => %s,%s", $field['Field'], 1, PHP_EOL);
+                $this->list6 .= sprintf("            %s", '');
             }
         }
     }
