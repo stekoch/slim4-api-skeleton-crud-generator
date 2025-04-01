@@ -28,7 +28,7 @@ class CrudGeneratorService
     private function getBaseInsertQueryFunction($entity)
     {
         // Get Base Query For Insert Function and return this Mock Code...
-        return '$query = \'INSERT INTO `'.$this->tablename.'` ('.$entity->list1.') VALUES ('.$entity->list2.')\';
+        return '$query = \'INSERT INTO ['.$this->tablename.'] ('.$entity->list1.') VALUES ('.$entity->list2.')\';
         $statement = $this->getDb()->prepare($query);
         '.$entity->list3.'
         $statement->execute();
@@ -41,7 +41,7 @@ class CrudGeneratorService
         // Get Base Query For Update Function and return this Mock Code...
         return $entity->list5.'
 
-        $query = \'UPDATE `'.$this->tablename.'` SET '.$entity->list4.' WHERE `id` = :id\';
+        $query = \'UPDATE ['.$this->tablename.'] SET '.$entity->list4.' WHERE [id] = :id\';
         $statement = $this->getDb()->prepare($query);
         '.$entity->list3.'
         $statement->execute();
@@ -111,7 +111,8 @@ $container[\''.$this->entity.'_service\'] = static function (Pimple\Container $c
         $content1 = file_get_contents($target);
         $content2 = preg_replace("/".'Objectbase'."/", $this->entityUpper, $content1);
         $content3 = preg_replace("/".'objectbase'."/", $this->entity, $content2);
-        file_put_contents($target, $content3);
+        $content4 = preg_replace("/".'tablename'."/", $this->tablename, $content3);
+        file_put_contents($target, $content4);
     }
 
     private function updateServices2()

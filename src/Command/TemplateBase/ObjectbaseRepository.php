@@ -20,7 +20,7 @@ final class ObjectbaseRepository
 
     public function checkAndGet(int $objectbaseId): object
     {
-        $query = 'SELECT * FROM [objectbase] WHERE [id] = :id';
+        $query = 'SELECT * FROM [tablename] WHERE [id] = :id';
         $statement = $this->getDb()->prepare($query);
         $statement->bindParam('id', $objectbaseId);
         $statement->execute();
@@ -34,7 +34,7 @@ final class ObjectbaseRepository
 
     public function getAll(): array
     {
-        $query = 'SELECT * FROM [objectbase] ORDER BY [id]';
+        $query = 'SELECT * FROM [tablename] ORDER BY [id]';
         $statement = $this->getDb()->prepare($query);
         $statement->execute();
 
@@ -53,7 +53,7 @@ final class ObjectbaseRepository
 
     public function delete(int $objectbaseId): void
     {
-        $query = 'DELETE FROM [objectbase] WHERE [id] = :id';
+        $query = 'DELETE FROM [tablename] WHERE [id] = :id';
         $statement = $this->getDb()->prepare($query);
         $statement->bindParam('id', $objectbaseId);
         $statement->execute();
