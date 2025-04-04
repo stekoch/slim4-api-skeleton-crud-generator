@@ -14,7 +14,7 @@ class CrudGeneratorService
         $this->entityUpper = ucfirst($this->entity);
         $this->tablename = $tablename ?: $entity;
         $entity = new CrudGeneratorEntity();
-        $entity->getParamsAndFields($db, $this->entity);
+        $entity->getParamsAndFields($db, $this->entity, $this->tablename);
         $this->updateRoutes();
         $this->updateRepository();
         $this->updateServices();

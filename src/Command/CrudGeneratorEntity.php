@@ -9,9 +9,9 @@ class CrudGeneratorEntity
     /**
      * Get Dynamic Parameters and Fields List.
      */
-    public function getParamsAndFields($db, $entity)
+    public function getParamsAndFields($db, $entity, $tablename)
     {
-        $fields = $this->getEntityFields($db, $entity);
+        $fields = $this->getEntityFields($db, $tablename);
         foreach ($fields as $field) {
             $this->getFieldsList($field, $entity);
         }
